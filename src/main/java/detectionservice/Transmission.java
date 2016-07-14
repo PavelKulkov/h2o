@@ -1,6 +1,8 @@
 package detectionservice;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.*;
 
 public class Transmission {
@@ -25,10 +27,19 @@ public class Transmission {
     }
 
 
-    public void send(TypeMessage payload) {
-        try (DatagramSocket socket = new DatagramSocket(/*port*/)) {
+    public void send(TypeMessage payload) throws UnknownHostException {
+        String pid = ManagementFactory.getRuntimeMXBean().getName();
+        pid = pid.substring(0,pid.indexOf("@"));
+        try {
+            FileWriter fileWriter = new FileWriter("config.properties");
+            fileWriter.write("server.id="+pid);
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try (DatagramSocket socket = new DatagramSocket()) {
             byte[] buf;
-            String msg = payload + "/" + InetAddress.getLocalHost().getHostAddress() + "&"; // // TODO: 12.07.2016 заменить на параметр
+            String msg = payload + "!"+ pid + "!tcp://" + InetAddress.getLocalHost().getHostAddress() + "&"; // // TODO: 12.07.2016 заменить на параметр
             buf = msg.getBytes();
             InetAddress group = InetAddress.getByName(addressGroup);
             DatagramPacket packet = new DatagramPacket(buf, buf.length, group, port);
