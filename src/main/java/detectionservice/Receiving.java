@@ -31,27 +31,27 @@ public class Receiving {
         cluster = false;
     }
 
-    public String run(TypeMessage typeMessage) {
+    public Node run(TypeMessage typeMessage) {
         try (DatagramSocket socket = new DatagramSocket(port)) {
             byte[] buf = new byte[256];
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
             socket.setSoTimeout(timeout);
             socket.receive(packet);
             String received = new String(packet.getData(), packet.getOffset(), packet.getLength());
-            System.out.println(received);
+            //System.out.println(received);
             if (received.isEmpty()) {
-                return "null";
+                return new Node(0,"0");
             }
-            String typeReceive = received.substring(0, received.indexOf('/'));
+            String[] args = received.split("!");
 
-            if (typeReceive.equals(TypeMessage.NODE) && typeReceive.equals(typeMessage)) {
+            if (args[0].equals(TypeMessage.NODE.name()) && args[0].equals(typeMessage.name())) {
                 received = received.substring(5, received.length() - 1);
-                return received;
+                return new Node(Integer.parseInt(args[1]),args[2]);
             }
-            if (typeReceive.equals(TypeMessage.LEADER) && typeReceive.equals(typeMessage)) {
+            if (args[0].equals(TypeMessage.LEADER.name()) && args[0].equals(typeMessage.name())) {
                 received = received.substring(7, received.length() - 1);
                 cluster = true;
-                return received;
+                return new Node(Integer.parseInt(args[1]),args[2]);
             }
 
         } catch (SocketTimeoutException ste) {
@@ -59,8 +59,9 @@ public class Receiving {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } finally {
-            return "null";
+
         }
+        return new Node(0,"0");
     }
 
     public int getPORT() {
