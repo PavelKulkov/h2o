@@ -3,18 +3,28 @@ package detectionservice;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Pavel Kulkov  on 13.07.2016.
- */
 public class JsonCluster {
-    private int logIndex;
-    private int lastLogIndex;
-    private List<Node> servers = new ArrayList<>();
+    private int logIndex = 0;
+    private int lastLogIndex = 0;
+    private List<Node> servers;
 
-    public JsonCluster(List<Node> servers){
-        logIndex = 0;
-        lastLogIndex = 0;
+    public JsonCluster() {
+        servers = new ArrayList<>();
+    }
+
+    public JsonCluster(List<Node> servers) {
         this.servers = servers;
     }
 
+    public void remove(Node node) {
+        servers.remove(node);
+    }
+
+    public void add(Node node) {
+        servers.add(node);
+    }
+
+    public boolean contains(Node node) {
+        return servers.contains(node);
+    }
 }

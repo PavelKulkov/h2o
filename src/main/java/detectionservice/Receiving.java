@@ -14,6 +14,7 @@ public class Receiving {
     private int timeout;
     private String myIP;
     private boolean cluster;
+    private String pid;
 
 
     public Receiving() throws IOException {
@@ -40,28 +41,26 @@ public class Receiving {
             String received = new String(packet.getData(), packet.getOffset(), packet.getLength());
             //System.out.println(received);
             if (received.isEmpty()) {
-                return new Node(0,"0");
+                return null;
             }
             String[] args = received.split("!");
 
             if (args[0].equals(TypeMessage.NODE.name()) && args[0].equals(typeMessage.name())) {
                 received = received.substring(5, received.length() - 1);
-                return new Node(Integer.parseInt(args[1]),args[2]);
+                return new Node(Integer.parseInt(args[1]), args[2]);
             }
             if (args[0].equals(TypeMessage.LEADER.name()) && args[0].equals(typeMessage.name())) {
                 received = received.substring(7, received.length() - 1);
                 cluster = true;
-                return new Node(Integer.parseInt(args[1]),args[2]);
+                return new Node(Integer.parseInt(args[1]), args[2]);
             }
 
         } catch (SocketTimeoutException ste) {
             System.out.println(ste.getMessage());
         } catch (IOException e) {
             System.out.println(e.getMessage());
-        } finally {
-
         }
-        return new Node(0,"0");
+        return null;
     }
 
     public int getPORT() {
@@ -74,6 +73,10 @@ public class Receiving {
 
     public int getTimeout() {
         return timeout;
+    }
+
+    public String getPid() {
+        return pid;
     }
 
     public boolean isCluster() {
