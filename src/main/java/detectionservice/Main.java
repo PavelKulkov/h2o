@@ -5,20 +5,27 @@ import com.google.gson.GsonBuilder;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
     public static JsonCluster cluster;
 
-    public static void main(String[] args) throws IOException {
+    private static final Logger anonymousLogger = Logger.getAnonymousLogger();
+    static final int PORT = 9001;
+    static final int BUFFER_SIZE = 4;
+
+    public static void main(String[] args) throws IOException { /*
         cluster = new JsonCluster();
         try {
-            Receiving receiving = new Receiving(4000);
-            Transmission transmission = new Transmission(4000);
+            Receiver receiver = new Receiver();
+            Sender sender = new Sender();
             cluster.add(new Node(transmission.getPid(), "tcp://" + receiving.getMyIP() + ":9003"));
             Node tmp;
-            for (int i = 0; i < 20 /*&& !receiving.isCluster()*/; i++) {
-                transmission.send(TypeMessage.NODE);
-                tmp = receiving.run(TypeMessage.NODE);
+            for (int i = 0; i < 20 *//*&& !receiving.isCluster()*//*; i++) {
+                sender.run();
+                receiver.run();
                 if (!cluster.contains(tmp) && tmp != null) {
                     cluster.add(tmp);
                 }
@@ -27,6 +34,38 @@ public class Main {
             System.out.println(e.getMessage());
         }
         createJsonFile();
+    }*/
+        final DatagramSocket socket;
+        try {
+            socket = new DatagramSocket(PORT);
+        } catch (IOException e) {
+            anonymousLogger.log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
+
+        final Thread senderThread = new Thread(new Sender(socket, BUFFER_SIZE));
+        final Thread receiverThread = new Thread(new Receiver(socket, BUFFER_SIZE));
+
+        senderThread.run();
+        receiverThread.run();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                anonymousLogger.info("Попали в хук.");
+                socket.close();
+
+                senderThread.interrupt();
+                receiverThread.interrupt();
+
+                try {
+                    receiverThread.join(5000);
+                    senderThread.join(5000);
+                } catch (InterruptedException e) {
+                    anonymousLogger.info("Поток завершения был прерван.");
+                }
+            }
+        });
     }
 
     private static void createJsonFile() throws IOException {
