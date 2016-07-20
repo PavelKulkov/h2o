@@ -9,7 +9,7 @@ import java.util.List;
 public class JsonCluster {
     private int logIndex;
     private int lastLogIndex;
-    private List<Node> servers = new ArrayList<>();
+    private List<Node> servers;
 
     public JsonCluster(List<Node> servers){
         logIndex = 0;

@@ -39,7 +39,7 @@ public class Transmission {
         }
         try (DatagramSocket socket = new DatagramSocket()) {
             byte[] buf;
-            String msg = payload + "!"+ pid + "!tcp://" + InetAddress.getLocalHost().getHostAddress() + "&"; // // TODO: 12.07.2016 заменить на параметр
+            String msg = payload + "!"+ pid + "!tcp://" + InetAddress.getLocalHost().getHostAddress() /*+ "&"*/; // // TODO: 12.07.2016 заменить на параметр
             buf = msg.getBytes();
             InetAddress group = InetAddress.getByName(addressGroup);
             DatagramPacket packet = new DatagramPacket(buf, buf.length, group, port);
