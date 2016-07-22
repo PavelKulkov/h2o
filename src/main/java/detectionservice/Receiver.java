@@ -1,8 +1,14 @@
 package detectionservice;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Arrays;
@@ -15,6 +21,9 @@ public class Receiver implements Runnable {
     private final byte[] buffer;
     private final DatagramSocket socket;
 
+    private final GsonBuilder gsonBuilder = new GsonBuilder();
+    private final Gson gson = gsonBuilder.create();
+
     Receiver(DatagramSocket socket, int bufferSize) {
         this.socket = socket;
         buffer = new byte[bufferSize];
@@ -22,6 +31,8 @@ public class Receiver implements Runnable {
 
     public void run() {
         Thread thread = Thread.currentThread();
+        String receive;
+        JsonCluster tempCluster;
         try {
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
             while (!thread.isInterrupted()) {
@@ -30,8 +41,17 @@ public class Receiver implements Runnable {
                 byteOut.write(buffer, packet.getOffset(), packet.getLength());
                 if (packet.getLength() > 0 && buffer[packet.getLength() - 1] == 0x00) {
                     byte[] bytes = byteOut.toByteArray();
-                    logger.info("Receive message: " + new String(Arrays.copyOf(bytes, bytes.length - 1)));
+                    receive = new String(Arrays.copyOf(bytes, bytes.length - 1));
+                    logger.info("Receive message: " + receive);
                     byteOut = new ByteArrayOutputStream();
+
+                    JsonReader reader = new JsonReader(new StringReader(receive));
+                    reader.setLenient(true);
+                    tempCluster = gson.fromJson(reader, JsonCluster.class);
+                    if(!Main.cluster.containsAll(tempCluster)){
+                        Main.cluster.addAll(tempCluster);
+                        Main.createJsonFile();
+                    }
                 }
             }
         } catch (IOException e) {

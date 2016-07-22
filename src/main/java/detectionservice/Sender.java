@@ -1,5 +1,8 @@
 package detectionservice;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.DatagramPacket;
@@ -15,33 +18,32 @@ public class Sender implements Runnable {
 
     private static final Logger logger = Logger.getLogger(Sender.class.getName());
     private String message;
-    public static final int DEFAULT_PORT = 9001;
-//    public static final int
     private static byte[] broadcast;
-//    private static int port;
     private final int bufferSize;
+
+    private final GsonBuilder gsonBuilder = new GsonBuilder();
+    private final Gson gson = gsonBuilder.create();
 
     private final DatagramSocket socket;
 
     Sender(DatagramSocket socket, int bufferSize) {
         this.socket = socket;
         this.bufferSize = bufferSize;
-        this.broadcast = getIP();
-
-        message = "Лол Кек Омг Азаза Лел Сёс Форчан Двач Дно Покемоны Деградация Овощь Пакет Яровой";
+        this.broadcast = getHostIP();
     }
 
     public void run() {
         Thread thread = Thread.currentThread();
+        message = gson.toJson(Main.cluster);
         try {
-            byte[] buffer = message.getBytes(Charset.forName("UTF-8"));
+            byte[] buffer = (message + "\u0000").getBytes(Charset.forName("UTF-8"));
             while (!thread.isInterrupted()) {
                 int offset = 0;
                 DatagramPacket packet = new DatagramPacket(
                         buffer,
                         buffer.length,
                         InetAddress.getByAddress(broadcast),
-                        4445);
+                        Main.PORT);
                 while (offset < buffer.length) {
                     packet.setData(Arrays.copyOfRange(buffer, offset, offset + bufferSize));
                     socket.send(packet);
@@ -59,10 +61,11 @@ public class Sender implements Runnable {
     }
 
 
-    private byte[] getIP() {
+    private byte[] getHostIP() {
         try {
             byte[] ip = InetAddress.getLocalHost().getAddress();
             ip[3] = (byte) 255;
+            ip = InetAddress.getByAddress(ip).getAddress();
             return ip;
         } catch (UnknownHostException e) {
             logger.log(Level.INFO, e.getMessage(), e);

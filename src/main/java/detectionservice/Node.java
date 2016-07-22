@@ -1,12 +1,35 @@
 package detectionservice;
 
 
-public class Node {
+import net.data.technology.jraft.ClusterServer;
+
+public class Node /*extends ClusterServer*/ {
     private int id;
     private String endpoint;
 
+    public Node() {
+        this.id = -1;
+        this.endpoint = "null";
+    }
+
     public Node(int id, String endpoint) {
         this.id = id;
+        this.endpoint = endpoint;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
 

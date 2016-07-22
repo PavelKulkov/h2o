@@ -1,5 +1,8 @@
 package detectionservice;
 
+import net.data.technology.jraft.ClusterServer;
+
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,23 +11,33 @@ public class JsonCluster {
     private int lastLogIndex = 0;
     private List<Node> servers;
 
-    public JsonCluster() {
-        servers = new ArrayList<>();
+    public JsonCluster() throws UnknownHostException {
+        this(new ArrayList<>());
     }
 
-    public JsonCluster(List<Node> servers) {
+    public JsonCluster(List<Node> servers) throws UnknownHostException {
         this.servers = servers;
+        this.add(new MyNode());
     }
 
-    public void remove(Node node) {
+    public synchronized void remove(Node node) {
         servers.remove(node);
     }
 
-    public void add(Node node) {
+    public synchronized void add(Node node) {
         servers.add(node);
     }
 
     public boolean contains(Node node) {
         return servers.contains(node);
+    }
+
+    public synchronized JsonCluster addAll(JsonCluster cluster) {
+        cluster.servers.stream().filter(node -> !this.contains(node)).forEach(this::add);
+        return this;
+    }
+
+    public synchronized boolean containsAll(JsonCluster cluster) {
+        return this.servers.containsAll(cluster.servers);
     }
 }
