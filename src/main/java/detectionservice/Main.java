@@ -83,7 +83,7 @@ public class Main {
     public synchronized static void createJsonFile() throws IOException {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-        System.out.println(gson.toJson(cluster));
+//        System.out.println(gson.toJson(cluster));
         FileWriter fileWriter = new FileWriter("cluster.json");
         fileWriter.write(gson.toJson(cluster));
         fileWriter.close();
