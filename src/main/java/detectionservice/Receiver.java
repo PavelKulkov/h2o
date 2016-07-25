@@ -8,7 +8,6 @@ import com.google.gson.stream.JsonReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Type;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Arrays;
@@ -49,9 +48,9 @@ public class Receiver implements Runnable {
                     JsonReader reader = new JsonReader(new StringReader(receive));
                     reader.setLenient(true);
                     tempCluster = gson.fromJson(reader, JsonCluster.class);
-                    if(!Main.cluster.containsAll(tempCluster)){
-                        Main.cluster.addAll(tempCluster);
-                        Main.createJsonFile();
+                    if(!DetectionThread.cluster.containsAll(tempCluster)){
+                        DetectionThread.cluster.addAll(tempCluster);
+                        DetectionThread.createJsonFile();
                     }
                 }
             }

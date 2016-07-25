@@ -1,6 +1,5 @@
 package detectionservice;
 
-import net.data.technology.jraft.ClusterServer;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -9,7 +8,7 @@ import java.util.List;
 public class JsonCluster {
     private int logIndex = 0;
     private int lastLogIndex = 0;
-    private List<Node> servers;
+    private volatile List<Node> servers;
 
     public JsonCluster() throws UnknownHostException {
         this(new ArrayList<>());

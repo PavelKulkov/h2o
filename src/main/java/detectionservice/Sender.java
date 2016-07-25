@@ -34,22 +34,24 @@ public class Sender implements Runnable {
 
     public void run() {
         Thread thread = Thread.currentThread();
-        message = gson.toJson(Main.cluster);
+
         try {
-            byte[] buffer = (message + "\u0000").getBytes(Charset.forName("UTF-8"));
+            byte[] buffer;
             while (!thread.isInterrupted()) {
+                message = gson.toJson(DetectionThread.cluster);
+                buffer = (message + "\u0000").getBytes(Charset.forName("UTF-8"));
                 int offset = 0;
                 DatagramPacket packet = new DatagramPacket(
                         buffer,
                         buffer.length,
                         InetAddress.getByAddress(broadcast),
-                        Main.PORT);
+                        DetectionThread.PORT);
                 while (offset < buffer.length) {
                     packet.setData(Arrays.copyOfRange(buffer, offset, offset + bufferSize));
                     socket.send(packet);
                     offset += bufferSize;
                 }
-
+                logger.info("Send message: "+message);
                 Thread.sleep(500);
             }
         } catch (IOException e) {

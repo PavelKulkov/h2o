@@ -2,3 +2,4 @@
 **/*.classpath
 **/*.project
 **/*.jar
+h2o.iml
