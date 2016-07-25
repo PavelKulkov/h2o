@@ -39,6 +39,7 @@ public class Main {
         createJsonFile();
     }*/
         cluster = new JsonCluster();
+        createJsonFile();
         final DatagramSocket socket;
         try {
             socket = new DatagramSocket(PORT);
@@ -52,13 +53,10 @@ public class Main {
 
         senderThread.start();
         receiverThread.start();
-        while (true) {
-            Thread.sleep(10000);
-            createJsonFile();
 
-            if(false){
-                break;
-            }
+        Scanner lel = new Scanner(System.in);
+        if (lel.toString().toLowerCase().equals("exit")) {
+            System.exit(0);
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
