@@ -12,50 +12,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class Main {
-    public static String LeaderIP;
 
     public static void main(String[] args) throws IOException {
-        /*
-        List<Node> nodes = new ArrayList<>();
 
-        boolean flag = true;
-        try {
-            Receiving receiving = new Receiving(4000);
-            Transmission transmission = new Transmission(4000);
-            Node tmp;
-            for (int i = 0; i < 10; i++) {
-                transmission.send(TypeMessage.NODE);
-                tmp = receiving.run(TypeMessage.NODE);
-                if (tmp.id != 0) {
-                    if (nodes.size() != 0) {
-                        for (int j = 0; j < nodes.size(); j++) {
-                            if (nodes.get(j).id == tmp.id) {
-                                flag = false;
-                                break;
-                            }
-                        }
-                        if (flag) {
-                            nodes.add(tmp);
-                        }
-                        flag = true;
-                    } else {
-                        nodes.add(tmp);
-                    }
-                }
-            }
-
-            JsonCluster jsonCluster = new JsonCluster(nodes);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            System.out.println(gson.toJson(jsonCluster));
-            FileWriter fileWriter = new FileWriter("cluster.json");
-            fileWriter.write(gson.toJson(jsonCluster));
-            fileWriter.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
-*/
         FileBasedServerStateManager fileBasedServerStateManager = new FileBasedServerStateManager("d:/raft");
         Path baseDir = Paths.get("d:/raft");
         MessagePrinter messagePrinter = new MessagePrinter(baseDir,9001);

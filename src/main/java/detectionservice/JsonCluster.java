@@ -39,4 +39,8 @@ public class JsonCluster {
     public synchronized boolean containsAll(JsonCluster cluster) {
         return this.servers.containsAll(cluster.servers);
     }
+
+    public synchronized Node getMe() {
+        return servers.get(0);
+    }
 }

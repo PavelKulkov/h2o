@@ -37,6 +37,7 @@ public class Sender implements Runnable {
 
         try {
             byte[] buffer;
+            logger.info(gson.toJson(DetectionThread.cluster));
             while (!thread.isInterrupted()) {
                 message = gson.toJson(DetectionThread.cluster);
                 buffer = (message + "\u0000").getBytes(Charset.forName("UTF-8"));
@@ -51,7 +52,7 @@ public class Sender implements Runnable {
                     socket.send(packet);
                     offset += bufferSize;
                 }
-                logger.info("Send message: "+message);
+//                logger.info("Send message: "+message);
                 Thread.sleep(500);
             }
         } catch (IOException e) {

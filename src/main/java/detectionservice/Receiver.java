@@ -41,8 +41,7 @@ public class Receiver implements Runnable {
                 if (packet.getLength() > 0 && buffer[packet.getLength() - 1] == 0x00) {
                     byte[] bytes = byteOut.toByteArray();
                     receive = new String(Arrays.copyOf(bytes, bytes.length - 1));
-//                    receive = receive.get
-                    logger.info("Receive message: " + receive);
+//                    logger.info("Receive message: " + receive);
                     byteOut = new ByteArrayOutputStream();
 
                     JsonReader reader = new JsonReader(new StringReader(receive));
@@ -51,6 +50,7 @@ public class Receiver implements Runnable {
                     if(!DetectionThread.cluster.containsAll(tempCluster)){
                         DetectionThread.cluster.addAll(tempCluster);
                         DetectionThread.createJsonFile();
+                        logger.info(receive);
                     }
                 }
             }

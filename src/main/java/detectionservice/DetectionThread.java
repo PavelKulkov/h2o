@@ -2,11 +2,17 @@ package detectionservice;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.data.technology.jraft.RaftContext;
+import net.data.technology.jraft.RaftParameters;
+import net.data.technology.jraft.RaftServer;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,25 +25,8 @@ public class DetectionThread {
     static final int BUFFER_SIZE = 2048;
     public static volatile JsonCluster cluster;
 
-    public static void main(String[] args) throws IOException, InterruptedException { /*
-        cluster = new JsonCluster();
-        try {
-            Receiver receiver = new Receiver();
-            Sender sender = new Sender();
-            cluster.add(new Node(transmission.getPid(), "tcp://" + receiving.getMyIP() + ":9003"));
-            Node tmp;
-            for (int i = 0; i < 20 *//*&& !receiving.isCluster()*//*; i++) {
-                sender.run();
-                receiver.run();
-                if (!cluster.contains(tmp) && tmp != null) {
-                    cluster.add(tmp);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        createJsonFile();
-    }*/
+    public static void main(String[] args) throws IOException, InterruptedException {
+
         cluster = new JsonCluster();
         createJsonFile();
         final DatagramSocket socket;
@@ -54,10 +43,10 @@ public class DetectionThread {
         senderThread.start();
         receiverThread.start();
 
-        Scanner lel = new Scanner(System.in);
-        if (lel.toString().toLowerCase().equals("exit")) {
-            System.exit(0);
-        }
+        createPropFile();
+
+        Thread.sleep(5000);
+        startRaft();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -82,8 +71,28 @@ public class DetectionThread {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
 //        System.out.println(gson.toJson(cluster));
-        FileWriter fileWriter = new FileWriter("cluster.json");
+        FileWriter fileWriter = new FileWriter("./raft//cluster.json");
         fileWriter.write(gson.toJson(cluster));
         fileWriter.close();
+    }
+
+    public synchronized static void createPropFile() throws IOException {
+        FileWriter fileWriter = new FileWriter("./raft//config.properties");
+        fileWriter.write("server.id=" + cluster.getMe().getId());
+        fileWriter.close();
+    }
+
+    public static void startRaft() {
+        FileBasedServerStateManager fileBasedServerStateManager = new FileBasedServerStateManager("./raft");
+        Path baseDir = Paths.get("./raft");
+        MessagePrinter messagePrinter = new MessagePrinter(baseDir,9001);
+        RaftParameters raftParameters = new RaftParameters();
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
+        RpcTcpListener rpcTcpListener = new RpcTcpListener(9001,executor);
+        Log4jLoggerFactory loggerFactory = new Log4jLoggerFactory();
+        RpcTcpClientFactory rpcTcpClientFactory = new RpcTcpClientFactory(executor);
+        RaftContext raftContext = new RaftContext(fileBasedServerStateManager,messagePrinter,raftParameters,rpcTcpListener,
+                loggerFactory,rpcTcpClientFactory);
+        RaftServer raftServer = new RaftServer(raftContext);
     }
 }
