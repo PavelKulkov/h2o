@@ -41,6 +41,7 @@ public class Receiver implements Runnable {
                 if (packet.getLength() > 0 && buffer[packet.getLength() - 1] == 0x00) {
                     byte[] bytes = byteOut.toByteArray();
                     receive = new String(Arrays.copyOf(bytes, bytes.length - 1));
+
 //                    logger.info("Receive message: " + receive);
                     byteOut = new ByteArrayOutputStream();
 

@@ -14,6 +14,12 @@ public class JsonCluster {
         this(new ArrayList<>());
     }
 
+    public JsonCluster(int port) throws UnknownHostException {
+        List<Node> list = new ArrayList<>();
+        list.add(new MyNode(port));
+        this.servers = list;
+    }
+
     public JsonCluster(List<Node> servers) throws UnknownHostException {
         this.servers = servers;
         this.add(new MyNode());

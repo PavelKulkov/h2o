@@ -46,7 +46,7 @@ public class Sender implements Runnable {
                         buffer,
                         buffer.length,
                         InetAddress.getByAddress(broadcast),
-                        DetectionThread.PORT);
+                        DetectionThread.DETECTION_PORT);
                 while (offset < buffer.length) {
                     packet.setData(Arrays.copyOfRange(buffer, offset, offset + bufferSize));
                     socket.send(packet);

@@ -15,8 +15,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        FileBasedServerStateManager fileBasedServerStateManager = new FileBasedServerStateManager("d:/raft");
-        Path baseDir = Paths.get("d:/raft");
+        FileBasedServerStateManager fileBasedServerStateManager = new FileBasedServerStateManager("./raft");
+        Path baseDir = Paths.get("./raft");
         MessagePrinter messagePrinter = new MessagePrinter(baseDir,9001);
         RaftParameters raftParameters = new RaftParameters();
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
