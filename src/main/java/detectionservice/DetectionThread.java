@@ -2,17 +2,16 @@ package detectionservice;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.data.technology.jraft.RaftConsensus;
 import net.data.technology.jraft.RaftContext;
 import net.data.technology.jraft.RaftParameters;
 import net.data.technology.jraft.RaftServer;
+import raft.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Scanner;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;

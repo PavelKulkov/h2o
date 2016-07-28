@@ -1,4 +1,4 @@
-package detectionservice;
+package raft;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;

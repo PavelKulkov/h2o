@@ -1,13 +1,13 @@
-package detectionservice;
+package raft;
 
 import net.data.technology.jraft.RpcClient;
 import net.data.technology.jraft.RpcClientFactory;
+import raft.RpcTcpClient;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.LogManager;
 
 /**
  * Created by Pavel Kulkov  on 18.07.2016.

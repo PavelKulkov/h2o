@@ -1,8 +1,9 @@
-package detectionservice;
+package raft;
 
 import net.data.technology.jraft.Logger;
 import net.data.technology.jraft.LoggerFactory;
 import org.apache.log4j.LogManager;
+import raft.Log4jLogger;
 
 /**
  * Created by Pavel Kulkov  on 18.07.2016.

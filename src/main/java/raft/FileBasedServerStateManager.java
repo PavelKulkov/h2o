@@ -1,4 +1,4 @@
-package detectionservice;
+package raft;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,6 +8,7 @@ import net.data.technology.jraft.ServerState;
 import net.data.technology.jraft.ServerStateManager;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import raft.FileBasedSequentialLogStore;
 
 import java.io.*;
 import java.nio.ByteBuffer;

@@ -1,10 +1,11 @@
-package detectionservice;
+package raft;
 
 import net.data.technology.jraft.LogEntry;
 import net.data.technology.jraft.LogValueType;
 import net.data.technology.jraft.SequentialLogStore;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import raft.BinaryUtils;
 
 import java.io.*;
 import java.nio.ByteBuffer;

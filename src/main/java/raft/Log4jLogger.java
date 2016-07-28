@@ -1,4 +1,4 @@
-package detectionservice;
+package raft;
 
 import org.apache.log4j.Logger;
 

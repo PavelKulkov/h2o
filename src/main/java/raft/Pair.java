@@ -1,4 +1,4 @@
-package detectionservice;
+package raft;
 
 /**
  * Created by Pavel Kulkov  on 18.07.2016.

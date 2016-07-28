@@ -1,9 +1,10 @@
-package detectionservice;
+package raft;
 
-import net.data.technology.jraft.Logger;
 import net.data.technology.jraft.RaftRequestMessage;
 import net.data.technology.jraft.RaftResponseMessage;
 import net.data.technology.jraft.RpcClient;
+import raft.AsyncUtility;
+import raft.BinaryUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,7 +17,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.logging.LogManager;
 
 /**
  * Created by Pavel Kulkov  on 18.07.2016.

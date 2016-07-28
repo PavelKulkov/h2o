@@ -1,4 +1,4 @@
-package detectionservice;
+package raft;
 
 import net.data.technology.jraft.*;
 import org.apache.log4j.LogManager;
