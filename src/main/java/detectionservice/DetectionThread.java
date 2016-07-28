@@ -2,13 +2,12 @@ package detectionservice;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.data.technology.jraft.RaftContext;
-import net.data.technology.jraft.RaftParameters;
-import net.data.technology.jraft.RaftServer;
+import net.data.technology.jraft.*;
 import raft.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.DatagramSocket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,12 +20,14 @@ import static java.lang.Thread.sleep;
 public class DetectionThread {
 
     private static final Logger anonymousLogger = Logger.getAnonymousLogger();
-    static final int DETECTION_PORT = 9001;
+    static final int DETECTION_PORT = 9002;
     static final int RAFT_PORT = 14880;
     static final int BUFFER_SIZE = 1024;
     public static volatile JsonCluster cluster;
+    static RaftContext raftContext;
+    static RaftServer raftServer;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, IllegalAccessException, NoSuchFieldException {
 
         cluster = new JsonCluster(RAFT_PORT); //List of Nodes
 
@@ -49,6 +50,23 @@ public class DetectionThread {
 
         Thread.sleep(10000);
         startRaft();
+
+
+
+        for (int i = 0; i < 100; i++){
+            Class c = raftServer.getClass();
+            Field f = null;
+            ServerRole role;
+
+            f = c.getDeclaredField("role");
+            f.setAccessible(true);
+            Object o = f.get(raftServer);
+            role = (ServerRole)o;
+
+            role = (ServerRole)o;
+            anonymousLogger.info(role.toString());
+            Thread.sleep(5000);
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -102,9 +120,9 @@ public class DetectionThread {
         RpcTcpListener rpcTcpListener = new RpcTcpListener(RAFT_PORT, executor);
         Log4jLoggerFactory loggerFactory = new Log4jLoggerFactory();
         RpcTcpClientFactory rpcTcpClientFactory = new RpcTcpClientFactory(executor);
-        RaftContext raftContext = new RaftContext(fileBasedServerStateManager, messagePrinter, raftParameters, rpcTcpListener,
+        raftContext = new RaftContext(fileBasedServerStateManager, messagePrinter, raftParameters, rpcTcpListener,
                 loggerFactory, rpcTcpClientFactory);
-        RaftServer raftServer = new RaftServer(raftContext);
+        raftServer = new RaftServer(raftContext);
         raftContext.getRpcListener().startListening(raftServer);
 
     }
