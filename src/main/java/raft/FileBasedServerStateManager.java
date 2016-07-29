@@ -18,9 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-/**
- * Created by Pavel Kulkov  on 18.07.2016.
- */
 public class FileBasedServerStateManager implements ServerStateManager {
 
     private static final String STATE_FILE = "server.state";

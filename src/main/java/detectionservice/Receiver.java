@@ -4,6 +4,7 @@ package detectionservice;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import com.sun.org.apache.xml.internal.security.keys.content.DEREncodedKeyValue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,15 +51,39 @@ public class Receiver implements Runnable {
                     JsonReader reader = new JsonReader(new StringReader(receive));
                     reader.setLenient(true);
                     tempCluster = gson.fromJson(reader, JsonCluster.class);
-                    if(!DetectionThread.cluster.containsAll(tempCluster)){
-                        DetectionThread.cluster.addAll(tempCluster);
-                        DetectionThread.createJsonFile();
-                        logger.info(receive);
+//                    if(!DetectionThread.cluster.containsAll(tempCluster)){
+//                        DetectionThread.cluster.addAll(tempCluster);
+//                        DetectionThread.createJsonFile();
+//                        logger.info(receive);
+//                    }
+
+                    for (Node node :
+                            tempCluster.getServers()) {
+                        synchronized (DetectionThread.cluster) {
+                            if (DetectionThread.cluster.contains(node)) {
+                                DetectionThread.cluster.remove(node);
+                                DetectionThread.cluster.add(node);
+                            } else {
+                                if (new Date().getTime() - node.getTime() < 30000) {
+                                    if (DetectionThread.client.addServer(node.toRaftNode()).get()) {
+                                        DetectionThread.cluster.add(node);
+                                        logger.info("New node " + node.getEndpoint() + " is added!");
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
                     }
+
+
                 }
             }
         } catch (IOException e) {
             logger.log(Level.INFO, e.getMessage(), e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
         logger.info("Thread receiver is interrupted.");
     }

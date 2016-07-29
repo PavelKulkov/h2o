@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.net.DatagramSocket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +27,7 @@ public class DetectionThread {
     public static volatile JsonCluster cluster;
     static RaftContext raftContext;
     static RaftServer raftServer;
+    static RaftClient client;
 
     public static void main(String[] args) throws IOException, InterruptedException, IllegalAccessException, NoSuchFieldException {
 
@@ -48,7 +50,7 @@ public class DetectionThread {
         createJsonFile();
         createPropFile();
 
-        Thread.sleep(10000);
+//        Thread.sleep(10000);
         startRaft();
 
 
@@ -103,7 +105,7 @@ public class DetectionThread {
     }
 
     public static void startRaft() {
-        FileBasedServerStateManager fileBasedServerStateManager = new FileBasedServerStateManager("./raft");
+        FileBasedServerStateManager stateManager = new FileBasedServerStateManager("./raft");
         Path baseDir = Paths.get("./raft");
         MessagePrinter messagePrinter = new MessagePrinter(baseDir, RAFT_PORT);
         RaftParameters raftParameters = new RaftParameters()
@@ -120,10 +122,14 @@ public class DetectionThread {
         RpcTcpListener rpcTcpListener = new RpcTcpListener(RAFT_PORT, executor);
         Log4jLoggerFactory loggerFactory = new Log4jLoggerFactory();
         RpcTcpClientFactory rpcTcpClientFactory = new RpcTcpClientFactory(executor);
-        raftContext = new RaftContext(fileBasedServerStateManager, messagePrinter, raftParameters, rpcTcpListener,
+        raftContext = new RaftContext(stateManager, messagePrinter, raftParameters, rpcTcpListener,
                 loggerFactory, rpcTcpClientFactory);
         raftServer = new RaftServer(raftContext);
         raftContext.getRpcListener().startListening(raftServer);
 
+        ClusterConfiguration config = stateManager.loadClusterConfiguration();
+        client = new RaftClient(rpcTcpClientFactory, config, loggerFactory);
+
     }
+
 }

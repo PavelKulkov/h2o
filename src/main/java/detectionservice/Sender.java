@@ -11,6 +11,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +41,11 @@ public class Sender implements Runnable {
             byte[] buffer;
             logger.info(gson.toJson(DetectionThread.cluster));
             while (!thread.isInterrupted()) {
+                try {
+                    removeOldServers();
+                } catch (ExecutionException e) {
+                    logger.info(e.getMessage());
+                }
                 message = gson.toJson(DetectionThread.cluster);
                 buffer = (message + "\u0000").getBytes(Charset.forName("UTF-8"));
                 int offset = 0;
@@ -82,5 +89,20 @@ public class Sender implements Runnable {
         // TODO: 20.07.2016 Придумать адекватный идентификатор
         return Integer.parseInt(pid);
     }
+
+    private void removeOldServers() throws ExecutionException, InterruptedException {
+        synchronized (DetectionThread.cluster) {
+            for (Node node :
+                    DetectionThread.cluster.getServers()) {
+                if (new Date().getTime() - node.getTime() > 30000) {
+                    if (DetectionThread.client.removeServer(node.getId()).get()) {
+                        DetectionThread.cluster.remove(node);
+                        logger.info("Node " + node.getEndpoint() + " is removed!");
+                    }
+                }
+            }
+        }
+    }
+
 
 }

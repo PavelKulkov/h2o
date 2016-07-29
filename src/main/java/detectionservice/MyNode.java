@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.logging.Level;
 
 public class MyNode extends Node {
@@ -19,12 +20,14 @@ public class MyNode extends Node {
         super();
         setId(getMyID());
         setEndpoint("tcp://" + InetAddress.getLocalHost().getHostAddress() + ":" + port);
+        setTime(new Date().getTime());
     }
 
     MyNode(int port, int ID) throws UnknownHostException {
         super();
         setId(ID);
         setEndpoint("tcp://" + InetAddress.getLocalHost().getHostAddress() + ":" + port);
+        setTime(new Date().getTime());
     }
 
     private int getMyID() {
