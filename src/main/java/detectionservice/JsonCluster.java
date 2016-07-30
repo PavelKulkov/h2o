@@ -1,11 +1,13 @@
 package detectionservice;
 
 
+import net.data.technology.jraft.ClusterConfiguration;
+
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JsonCluster {
+public class JsonCluster /*extends ClusterConfiguration*/ {
     private int logIndex = 0;
     private int lastLogIndex = 0;
     private static transient final int DEFAULT_PORT = 14880;
@@ -59,7 +61,7 @@ public class JsonCluster {
         return servers.contains(node);
     }
 
-    public List<Node> getServers() {
+    public List<Node> getNodes() {
         return servers;
     }
 }

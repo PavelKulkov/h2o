@@ -2,6 +2,7 @@ package raft;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import detectionservice.JsonCluster;
 import net.data.technology.jraft.ClusterConfiguration;
 import net.data.technology.jraft.SequentialLogStore;
 import net.data.technology.jraft.ServerState;
@@ -57,6 +58,8 @@ public class FileBasedServerStateManager implements ServerStateManager {
         try{
             stream = new FileInputStream(this.container.resolve(CLUSTER_CONFIG_FILE).toString());
             ClusterConfiguration config = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), ClusterConfiguration.class);
+//            JsonCluster cluster = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonCluster.class);
+//            ClusterConfiguration config = cluster;
             return config;
         }catch(IOException error){
             this.logger.error("failed to read cluster configuration", error);

@@ -4,7 +4,6 @@ package detectionservice;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.sun.org.apache.xml.internal.security.keys.content.DEREncodedKeyValue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -58,7 +57,7 @@ public class Receiver implements Runnable {
 //                    }
 
                     for (Node node :
-                            tempCluster.getServers()) {
+                            tempCluster.getNodes()) {
                         synchronized (DetectionThread.cluster) {
                             if (DetectionThread.cluster.contains(node)) {
                                 DetectionThread.cluster.remove(node);

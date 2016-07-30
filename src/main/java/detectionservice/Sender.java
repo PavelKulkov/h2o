@@ -93,7 +93,7 @@ public class Sender implements Runnable {
     private void removeOldServers() throws ExecutionException, InterruptedException {
         synchronized (DetectionThread.cluster) {
             for (Node node :
-                    DetectionThread.cluster.getServers()) {
+                    DetectionThread.cluster.getNodes()) {
                 if (new Date().getTime() - node.getTime() > 30000) {
                     if (DetectionThread.client.removeServer(node.getId()).get()) {
                         DetectionThread.cluster.remove(node);

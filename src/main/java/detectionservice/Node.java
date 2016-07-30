@@ -5,7 +5,7 @@ import net.data.technology.jraft.ClusterServer;
 
 import java.util.Date;
 
-public class Node {
+public class Node /*extends ClusterServer*/ {
     private /*transient*/ int id;
     private String endpoint;
     private long time;
