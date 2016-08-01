@@ -33,7 +33,7 @@ public class Receiver implements Runnable {
     public void run() {
         Thread thread = Thread.currentThread();
         String receive;
-        JsonCluster tempCluster;
+        DetectionCluster tempCluster;
         try {
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
             while (!thread.isInterrupted()) {
@@ -49,31 +49,8 @@ public class Receiver implements Runnable {
 
                     JsonReader reader = new JsonReader(new StringReader(receive));
                     reader.setLenient(true);
-                    tempCluster = gson.fromJson(reader, JsonCluster.class);
-//                    if(!DetectionThread.cluster.containsAll(tempCluster)){
-//                        DetectionThread.cluster.addAll(tempCluster);
-//                        DetectionThread.createJsonFile();
-//                        logger.info(receive);
-//                    }
-
-                    for (Node node :
-                            tempCluster.getNodes()) {
-                        synchronized (DetectionThread.cluster) {
-                            if (DetectionThread.cluster.contains(node)) {
-                                DetectionThread.cluster.remove(node);
-                                DetectionThread.cluster.add(node);
-                            } else {
-                                if (new Date().getTime() - node.getTime() < 30000) {
-                                    if (DetectionThread.client.addServer(node.toRaftNode()).get()) {
-                                        DetectionThread.cluster.add(node);
-                                        logger.info("New node " + node.getEndpoint() + " is added!");
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
+                    tempCluster = gson.fromJson(reader, DetectionCluster.class);
+                    addNewServers(tempCluster);
 
                 }
             }
@@ -85,5 +62,22 @@ public class Receiver implements Runnable {
             e.printStackTrace();
         }
         logger.info("Thread receiver is interrupted.");
+    }
+
+    private void addNewServers(DetectionCluster tempCluster) throws ExecutionException, InterruptedException {
+        for (Node node :
+                tempCluster.getNodes()) {
+            synchronized (DetectionThread.cluster) {
+                if (DetectionThread.cluster.contains(node)) {
+                    DetectionThread.cluster.remove(node);
+                    DetectionThread.cluster.add(node);
+                } else if (new Date().getTime() - node.getTime() < 30000)
+                    if (DetectionThread.client.addServer(node.toRaftNode()).get()) {
+                        DetectionThread.cluster.add(node);
+                        logger.info("New node " + node.getEndpoint() + " is added!");
+                        continue;
+                    }
+            }
+        }
     }
 }

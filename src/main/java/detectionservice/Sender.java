@@ -70,7 +70,6 @@ public class Sender implements Runnable {
         logger.info("Thread sender was terminated.");
     }
 
-
     private byte[] getHostIP() {
         try {
             byte[] ip = InetAddress.getLocalHost().getAddress();

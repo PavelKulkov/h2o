@@ -1,24 +1,24 @@
 package detectionservice;
 
 
-import net.data.technology.jraft.ClusterConfiguration;
-
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JsonCluster /*extends ClusterConfiguration*/ {
-    private int logIndex = 0;
-    private int lastLogIndex = 0;
+public class DetectionCluster /*extends ClusterConfiguration */{
     private static transient final int DEFAULT_PORT = 14880;
     private transient final int MY_ID;
+
+    private long logIndex = 0;
+    private long lastLogIndex = 0;
     private volatile List<Node> servers;
 
-    public JsonCluster() throws UnknownHostException {
+    public DetectionCluster() throws UnknownHostException {
         this(DEFAULT_PORT);
     }
 
-    public JsonCluster(int port) throws UnknownHostException {
+    public DetectionCluster(int port) throws UnknownHostException {
+        super();
         List<Node> list = new ArrayList<>();
         Node node = new MyNode(port);
         MY_ID = node.getId();
@@ -26,13 +26,13 @@ public class JsonCluster /*extends ClusterConfiguration*/ {
         this.servers = list;
     }
 
-    public synchronized JsonCluster addAll(JsonCluster cluster) {
+    public synchronized DetectionCluster addAll(DetectionCluster cluster) {
         this.servers.stream().filter(node -> !cluster.contains(node)).forEach(cluster::add);
         this.servers = cluster.servers;
         return this;
     }
 
-    public synchronized boolean containsAll(JsonCluster cluster) {
+    public synchronized boolean containsAll(DetectionCluster cluster) {
         return this.servers.containsAll(cluster.servers);
     }
 

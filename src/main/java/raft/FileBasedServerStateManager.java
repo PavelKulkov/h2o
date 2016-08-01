@@ -2,14 +2,13 @@ package raft;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import detectionservice.JsonCluster;
+import detectionservice.DetectionCluster;
 import net.data.technology.jraft.ClusterConfiguration;
 import net.data.technology.jraft.SequentialLogStore;
 import net.data.technology.jraft.ServerState;
 import net.data.technology.jraft.ServerStateManager;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import raft.FileBasedSequentialLogStore;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -31,11 +30,11 @@ public class FileBasedServerStateManager implements ServerStateManager {
     private Path container;
     private int serverId;
 
-    public FileBasedServerStateManager(String dataDirectory){
+    public FileBasedServerStateManager(String dataDirectory) {
         this.logStore = new FileBasedSequentialLogStore(dataDirectory);
         this.container = Paths.get(dataDirectory);
         this.logger = LogManager.getLogger(getClass());
-        try{
+        try {
             Properties props = new Properties();
             FileInputStream configInput = new FileInputStream(this.container.resolve(CONFIG_FILE).toString());
             props.load(configInput);
@@ -44,38 +43,39 @@ public class FileBasedServerStateManager implements ServerStateManager {
             configInput.close();
             this.serverStateFile = new RandomAccessFile(this.container.resolve(STATE_FILE).toString(), "rw");
             this.serverStateFile.seek(0);
-        }catch(IOException exception){
+        } catch (IOException exception) {
             this.logger.error("failed to create/open server state file", exception);
             throw new IllegalArgumentException("cannot create/open the state file", exception);
         }
     }
 
     @Override
-    public ClusterConfiguration loadClusterConfiguration(){
+    public ClusterConfiguration loadClusterConfiguration() {
         Gson gson = new GsonBuilder().create();
         FileInputStream stream = null;
 
-        try{
+        try {
             stream = new FileInputStream(this.container.resolve(CLUSTER_CONFIG_FILE).toString());
             ClusterConfiguration config = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), ClusterConfiguration.class);
-//            JsonCluster cluster = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonCluster.class);
-//            ClusterConfiguration config = cluster;
+//            DetectionCluster cluster = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), DetectionCluster.class);
+//            ClusterConfiguration config = new ClusterConfiguration();
+//            config.servers = cluster.getNodes();
             return config;
-        }catch(IOException error){
+        } catch (IOException error) {
             this.logger.error("failed to read cluster configuration", error);
             throw new RuntimeException("failed to read in cluster config", error);
-        }finally{
-            if(stream != null){
-                try{
+        } finally {
+            if (stream != null) {
+                try {
                     stream.close();
-                }catch(Exception e){
+                } catch (Exception e) {
                     //ignore the error
                 }
             }
         }
     }
 
-    public void saveClusterConfiguration(ClusterConfiguration configuration){
+    public void saveClusterConfiguration(ClusterConfiguration configuration) {
         Gson gson = new GsonBuilder().create();
         String configData = gson.toJson(configuration);
         try {
@@ -89,20 +89,20 @@ public class FileBasedServerStateManager implements ServerStateManager {
         }
     }
 
-    public int getServerId(){
+    public int getServerId() {
         return this.serverId;
     }
 
     @Override
     public synchronized void persistState(ServerState serverState) {
-        try{
+        try {
             ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES * 2 + Integer.BYTES);
             buffer.putLong(serverState.getTerm());
             buffer.putLong(serverState.getCommitIndex());
             buffer.putInt(serverState.getVotedFor());
             this.serverStateFile.write(buffer.array());
             this.serverStateFile.seek(0);
-        }catch(IOException ioError){
+        } catch (IOException ioError) {
             this.logger.error("failed to write to the server state file", ioError);
             throw new RuntimeException("fatal I/O error while writing to the state file", ioError);
         }
@@ -110,8 +110,8 @@ public class FileBasedServerStateManager implements ServerStateManager {
 
     @Override
     public synchronized ServerState readState() {
-        try{
-            if(this.serverStateFile.length() == 0){
+        try {
+            if (this.serverStateFile.length() == 0) {
                 return null;
             }
 
@@ -124,7 +124,7 @@ public class FileBasedServerStateManager implements ServerStateManager {
             state.setCommitIndex(buffer.getLong());
             state.setVotedFor(buffer.getInt());
             return state;
-        }catch(IOException ioError){
+        } catch (IOException ioError) {
             this.logger.error("failed to read from the server state file", ioError);
             throw new RuntimeException("fatal I/O error while reading from state file", ioError);
         }
@@ -135,28 +135,28 @@ public class FileBasedServerStateManager implements ServerStateManager {
         return this.logStore;
     }
 
-    public void close(){
-        try{
+    public void close() {
+        try {
             this.serverStateFile.close();
             this.logStore.close();
-        }catch(IOException exception){
+        } catch (IOException exception) {
             this.logger.info("failed to shutdown the server state manager due to io error", exception);
         }
     }
 
-    private void read(byte[] buffer){
-        try{
+    private void read(byte[] buffer) {
+        try {
             int offset = 0;
             int bytesRead = 0;
-            while(offset < buffer.length && (bytesRead = this.serverStateFile.read(buffer, offset, buffer.length - offset)) != -1){
+            while (offset < buffer.length && (bytesRead = this.serverStateFile.read(buffer, offset, buffer.length - offset)) != -1) {
                 offset += bytesRead;
             }
 
-            if(offset < buffer.length){
+            if (offset < buffer.length) {
                 this.logger.error(String.format("only %d bytes are read while %d bytes are desired, bad file", offset, buffer.length));
                 throw new RuntimeException("bad file, insufficient file data for reading");
             }
-        }catch(IOException exception){
+        } catch (IOException exception) {
             this.logger.error("failed to read and fill the buffer", exception);
             throw new RuntimeException(exception.getMessage(), exception);
         }

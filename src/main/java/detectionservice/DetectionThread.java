@@ -11,7 +11,6 @@ import java.lang.reflect.Field;
 import java.net.DatagramSocket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,14 +23,14 @@ public class DetectionThread {
     static final int DETECTION_PORT = 9002;
     static final int RAFT_PORT = 14880;
     static final int BUFFER_SIZE = 1024;
-    public static volatile JsonCluster cluster;
+    public static volatile DetectionCluster cluster;
     static RaftContext raftContext;
     static RaftServer raftServer;
     static RaftClient client;
 
     public static void main(String[] args) throws IOException, InterruptedException, IllegalAccessException, NoSuchFieldException {
 
-        cluster = new JsonCluster(RAFT_PORT); //List of Nodes
+        cluster = new DetectionCluster(RAFT_PORT); //List of Nodes
 
         final DatagramSocket socket;
         try {
@@ -47,15 +46,14 @@ public class DetectionThread {
         senderThread.start();
         receiverThread.start();
 
-        createJsonFile();
+        createClusterFile();
         createPropFile();
 
 //        Thread.sleep(10000);
         startRaft();
 
 
-
-        for (int i = 0; i < 100; i++){
+        for (int i = 0; i < 100; i++) {
             Class c = raftServer.getClass();
             Field f = null;
             ServerRole role;
@@ -63,9 +61,9 @@ public class DetectionThread {
             f = c.getDeclaredField("role");
             f.setAccessible(true);
             Object o = f.get(raftServer);
-            role = (ServerRole)o;
+            role = (ServerRole) o;
 
-            role = (ServerRole)o;
+            role = (ServerRole) o;
             anonymousLogger.info(role.toString());
             Thread.sleep(5000);
         }
@@ -89,12 +87,15 @@ public class DetectionThread {
         });
     }
 
-    public synchronized static void createJsonFile() throws IOException {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
+    public synchronized static void createClusterFile() throws IOException {
+//        GsonBuilder gsonBuilder = new GsonBuilder();
+//        Gson gson = gsonBuilder.create();
 //        System.out.println(gson.toJson(cluster));
         FileWriter fileWriter = new FileWriter("./raft//cluster.json");
-        fileWriter.write(gson.toJson(cluster));
+        String beginRaft = "{\"logIndex\":0,\"lastLogIndex\":0,\"servers\":[{\"id\":" + cluster.getMe().getId() +
+                ",\"endpoint\":\"" + cluster.getMe().getEndpoint() + "\"}]}\n";
+        System.out.println(beginRaft);
+        fileWriter.write(beginRaft);
         fileWriter.close();
     }
 
