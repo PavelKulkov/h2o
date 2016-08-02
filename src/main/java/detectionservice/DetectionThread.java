@@ -43,17 +43,17 @@ public class DetectionThread {
         final Thread senderThread = new Thread(new Sender(socket, BUFFER_SIZE));
         final Thread receiverThread = new Thread(new Receiver(socket, BUFFER_SIZE));
 
-        senderThread.start();
-        receiverThread.start();
-
         createClusterFile();
         createPropFile();
 
 //        Thread.sleep(10000);
         startRaft();
 
+        senderThread.start();
+        receiverThread.start();
 
-        for (int i = 0; i < 100; i++) {
+
+        for (int i = 0; i < 10000; i++) {
             Class c = raftServer.getClass();
             Field f = null;
             ServerRole role;
@@ -94,7 +94,6 @@ public class DetectionThread {
         FileWriter fileWriter = new FileWriter("./raft//cluster.json");
         String beginRaft = "{\"logIndex\":0,\"lastLogIndex\":0,\"servers\":[{\"id\":" + cluster.getMe().getId() +
                 ",\"endpoint\":\"" + cluster.getMe().getEndpoint() + "\"}]}\n";
-        System.out.println(beginRaft);
         fileWriter.write(beginRaft);
         fileWriter.close();
     }

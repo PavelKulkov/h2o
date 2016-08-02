@@ -64,10 +64,10 @@ public class Node {
         return result;
     }
 
-    public ClusterServer toRaftNode() {
+    public ClusterServer toClusterServer() {
         ClusterServer server = new ClusterServer();
-        server.setId(this.id);
-        server.setEndpoint(this.endpoint);
+        server.setId(id);
+        server.setEndpoint(endpoint);
         return  server;
     }
 

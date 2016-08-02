@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetectionCluster /*extends ClusterConfiguration */{
+public class DetectionCluster /*extends ClusterConfiguration */ {
     private static transient final int DEFAULT_PORT = 14880;
     private transient final int MY_ID;
 
@@ -20,7 +20,7 @@ public class DetectionCluster /*extends ClusterConfiguration */{
     public DetectionCluster(int port) throws UnknownHostException {
         super();
         List<Node> list = new ArrayList<>();
-        Node node = new MyNode(port);
+        Node node = new MyNode(port, 1);
         MY_ID = node.getId();
         list.add(node);
         this.servers = list;
@@ -47,18 +47,25 @@ public class DetectionCluster /*extends ClusterConfiguration */{
     }
 
     public synchronized boolean remove(Node node) {
-        if (node.getId() != MY_ID) {
-            return servers.remove(node);
-        }
+        if (node != null)
+            if (node.getId() != MY_ID) {
+                return servers.remove(node);
+            }
         return false;
     }
 
-    public synchronized void add(Node node) {
-        servers.add(node);
+    public synchronized boolean add(Node node) {
+        if (node != null)
+            if (node.getId() != MY_ID) {
+                return servers.add(node);
+            }
+        return false;
     }
 
     public boolean contains(Node node) {
-        return servers.contains(node);
+        if (node != null)
+            return servers.contains(node);
+        return false;
     }
 
     public List<Node> getNodes() {

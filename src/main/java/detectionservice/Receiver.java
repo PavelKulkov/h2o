@@ -1,9 +1,9 @@
 package detectionservice;
 
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import net.data.technology.jraft.ClusterServer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -71,12 +71,13 @@ public class Receiver implements Runnable {
                 if (DetectionThread.cluster.contains(node)) {
                     DetectionThread.cluster.remove(node);
                     DetectionThread.cluster.add(node);
-                } else if (new Date().getTime() - node.getTime() < 30000)
-                    if (DetectionThread.client.addServer(node.toRaftNode()).get()) {
+                } else if ((new Date().getTime() - node.getTime()) < 30000) {
+                    if (DetectionThread.client.addServer(node.toClusterServer()).get()) {
                         DetectionThread.cluster.add(node);
                         logger.info("New node " + node.getEndpoint() + " is added!");
                         continue;
                     }
+                }
             }
         }
     }
