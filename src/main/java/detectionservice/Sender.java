@@ -2,6 +2,7 @@ package detectionservice;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.data.technology.jraft.RaftClient;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -12,6 +13,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,13 +24,15 @@ public class Sender implements Runnable {
     private String message;
     private static byte[] broadcast;
     private final int bufferSize;
+    private final DetectionCluster cluster = ClusterSingleton.getInstance();
+    private final RaftClient client = ClientSingleton.getInstance();
 
     private final GsonBuilder gsonBuilder = new GsonBuilder();
     private final Gson gson = gsonBuilder.create();
 
     private final DatagramSocket socket;
 
-    Sender(DatagramSocket socket, int bufferSize) {
+    Sender(DatagramSocket socket, int bufferSize) throws IOException {
         this.socket = socket;
         this.bufferSize = bufferSize;
         this.broadcast = getHostIP();
@@ -39,14 +43,14 @@ public class Sender implements Runnable {
 
         try {
             byte[] buffer;
-            logger.info(gson.toJson(DetectionThread.cluster));
+            logger.info(gson.toJson(cluster));
             while (!thread.isInterrupted()) {
                 try {
                     removeOldServers();
                 } catch (ExecutionException e) {
                     logger.info(e.getMessage());
                 }
-                message = gson.toJson(DetectionThread.cluster);
+                message = gson.toJson(cluster);
                 buffer = (message + "\u0000").getBytes(Charset.forName("UTF-8"));
                 int offset = 0;
                 DatagramPacket packet = new DatagramPacket(
@@ -90,17 +94,17 @@ public class Sender implements Runnable {
     }
 
     private void removeOldServers() throws ExecutionException, InterruptedException {
-        synchronized (DetectionThread.cluster) {
-            for (Node node :
-                    DetectionThread.cluster.getNodes()) {
-                if (new Date().getTime() - node.getTime() > 30000) {
-                    if (DetectionThread.client.removeServer(node.getId()).get()) {
-                        DetectionThread.cluster.remove(node);
-                        logger.info("Node " + node.getEndpoint() + " is removed!");
-                    }
+        Iterator<Node> iterator = cluster.getNodes().iterator();
+        while (iterator.hasNext()) {
+            Node node = iterator.next();
+            if (new Date().getTime() - node.getTime() > 30000) {
+                if (client.removeServer(node.getId()).get()) {
+                    iterator.remove();
+                    logger.info("Node " + node.getEndpoint() + " is removed!");
                 }
             }
         }
+
     }
 
 

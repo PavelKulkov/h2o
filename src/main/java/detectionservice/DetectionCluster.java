@@ -4,13 +4,12 @@ package detectionservice;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class DetectionCluster /*extends ClusterConfiguration */ {
+public class DetectionCluster {
     private static transient final int DEFAULT_PORT = 14880;
     private transient final int MY_ID;
 
-    private long logIndex = 0;
-    private long lastLogIndex = 0;
     private volatile List<Node> servers;
 
     public DetectionCluster() throws UnknownHostException {
@@ -19,24 +18,23 @@ public class DetectionCluster /*extends ClusterConfiguration */ {
 
     public DetectionCluster(int port) throws UnknownHostException {
         super();
-        List<Node> list = new ArrayList<>();
-        Node node = new MyNode(port, 1);
+        List<Node> list = new CopyOnWriteArrayList<>();
+        Node node = new MyNode(port, 2);
         MY_ID = node.getId();
         list.add(node);
         this.servers = list;
     }
 
-    public synchronized DetectionCluster addAll(DetectionCluster cluster) {
-        this.servers.stream().filter(node -> !cluster.contains(node)).forEach(cluster::add);
-        this.servers = cluster.servers;
+    public DetectionCluster addAllNew(DetectionCluster cluster) {
+        cluster.servers.stream().filter(node -> !this.contains(node)).forEach(this::add);
         return this;
     }
 
-    public synchronized boolean containsAll(DetectionCluster cluster) {
+    public boolean containsAll(DetectionCluster cluster) {
         return this.servers.containsAll(cluster.servers);
     }
 
-    public synchronized Node getMe() {
+    public Node getMe() {
         for (Node node :
                 this.servers) {
             if (node.getId() == MY_ID) {
@@ -46,7 +44,7 @@ public class DetectionCluster /*extends ClusterConfiguration */ {
         return null;
     }
 
-    public synchronized boolean remove(Node node) {
+    public boolean remove(Node node) {
         if (node != null)
             if (node.getId() != MY_ID) {
                 return servers.remove(node);
