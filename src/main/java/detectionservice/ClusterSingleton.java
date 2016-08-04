@@ -7,7 +7,7 @@ public class ClusterSingleton {
     private static DetectionCluster cluster = null;
 
     private static DetectionCluster createInstance() throws IOException {
-        cluster = new DetectionCluster(Constants.DETECTION_PORT);
+        cluster = new DetectionCluster(Constants.RAFT_PORT);
         return cluster;
     }
 

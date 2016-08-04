@@ -12,13 +12,13 @@ public class DetectionCluster {
     private volatile List<Node> servers;
 
     public DetectionCluster() throws UnknownHostException {
-        this(Constants.DETECTION_PORT);
+        this(Constants.RAFT_PORT);
     }
 
     public DetectionCluster(int port) throws UnknownHostException {
         super();
         List<Node> list = new CopyOnWriteArrayList<>();
-        Node node = new MyNode(port);
+        Node node = new MyNode(port,0);
         MY_ID = node.getId();
         list.add(node);
         this.servers = list;
