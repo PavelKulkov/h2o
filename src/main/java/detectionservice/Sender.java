@@ -96,7 +96,7 @@ public class Sender implements Runnable {
     private void removeOldServers() throws ExecutionException, InterruptedException {
         for (Node node :
                 cluster.getNodes()) {
-            if (new Date().getTime() - node.getTime() > 5000) {
+            if (new Date().getTime() - node.getTime() > Constants.TIMEOUT && !node.getClass().equals(MyNode.class)) {
                 if (client.removeServer(node.getId()).get()) {
                     cluster.remove(node);
                     logger.info("Node " + node.getEndpoint() + " is removed!");

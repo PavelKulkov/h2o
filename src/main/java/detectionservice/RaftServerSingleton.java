@@ -16,7 +16,7 @@ public class RaftServerSingleton {
     private static RaftServer createInstance() {
         FileBasedServerStateManager stateManager = new FileBasedServerStateManager(Constants.RAFT_PATH);
         Path baseDir = Paths.get(Constants.RAFT_PATH);
-        MessagePrinter messagePrinter = new MessagePrinter(baseDir, Constants.RAFT_PORT);
+        MessagePrinter messagePrinter = new MessagePrinter(baseDir, Constants.RAFT_PORT+2);
         RaftParameters raftParameters = new RaftParameters()
                 .withElectionTimeoutUpper(5000)
                 .withElectionTimeoutLower(3000)
@@ -28,7 +28,7 @@ public class RaftServerSingleton {
                 .withSnapshotEnabled(5000)
                 .withSyncSnapshotBlockSize(0);
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
-        RpcTcpListener rpcTcpListener = new RpcTcpListener(Constants.RAFT_PORT, executor);
+        RpcTcpListener rpcTcpListener = new RpcTcpListener(Constants.RAFT_PORT+2, executor);
         Log4jLoggerFactory loggerFactory = new Log4jLoggerFactory();
         RpcTcpClientFactory rpcTcpClientFactory = new RpcTcpClientFactory(executor);
         RaftContext raftContext = new RaftContext(stateManager, messagePrinter, raftParameters, rpcTcpListener,

@@ -14,10 +14,10 @@ public class DetectionThread {
 
     private static final Logger anonymousLogger = Logger.getAnonymousLogger();
     private static RaftServer raftServer;
+    private static RaftClient raftClient;
     private static DetectionCluster cluster;
 
-    static void main(String[] args) throws IOException, InterruptedException, IllegalAccessException, NoSuchFieldException {
-
+    public static void main(String[] args) throws IOException, InterruptedException, IllegalAccessException, NoSuchFieldException {
         final DatagramSocket socket;
         try {
             socket = new DatagramSocket(Constants.DETECTION_PORT);
@@ -32,6 +32,8 @@ public class DetectionThread {
         dir.createPropFile(Constants.RAFT_PATH);
 
         raftServer = RaftServerSingleton.getInstance();
+        dir.createClusterFile(Constants.RAFT_PATH);
+        raftClient = ClientSingleton.getInstance();
         cluster = ClusterSingleton.getInstance();
 
         final Thread senderThread = new Thread(new Sender(socket, Constants.BUFFER_SIZE));

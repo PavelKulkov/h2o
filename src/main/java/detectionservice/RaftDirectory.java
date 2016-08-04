@@ -28,8 +28,10 @@ public class RaftDirectory {
 
     public void createClusterFile(String path) throws IOException {
         FileWriter fileWriter = new FileWriter(path + "//cluster.json");
-        String beginRaft = "{\"logIndex\":0,\"lastLogIndex\":0,\"servers\":[{\"id\":" + cluster.getMe().getId() +
-                ",\"endpoint\":\"" + cluster.getMe().getEndpoint() + "\"}]}\n";
+        String beginRaft = "{\"logIndex\":0,\"lastLogIndex\":0,\"servers\":[" +
+                "{\"id\":" + cluster.getMe().getId() +
+                ",\"endpoint\":\"" + cluster.getMe().getEndpoint() + "\"}" +
+                "]}\n";
         fileWriter.write(beginRaft);
         fileWriter.close();
     }

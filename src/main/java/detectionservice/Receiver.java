@@ -76,7 +76,7 @@ public class Receiver implements Runnable {
             if (cluster.contains(node)) {
                 cluster.remove(node);
                 cluster.add(node);
-            } else if ((new Date().getTime() - node.getTime()) < 5000) {
+            } else if ((new Date().getTime() - node.getTime()) < Constants.TIMEOUT) {
                 if (client.addServer(node.toClusterServer()).get()) {
                     cluster.add(node);
                     logger.info("New node " + node.getEndpoint() + " is added!");
