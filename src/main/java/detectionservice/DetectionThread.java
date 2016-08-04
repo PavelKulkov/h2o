@@ -31,9 +31,8 @@ public class DetectionThread {
         dir.createClusterFile(Constants.RAFT_PATH);
         dir.createPropFile(Constants.RAFT_PATH);
 
-        raftServer = RaftServerSingleton.getInstance();
-        dir.createClusterFile(Constants.RAFT_PATH);
         raftClient = ClientSingleton.getInstance();
+        raftServer = RaftServerSingleton.getInstance();
         cluster = ClusterSingleton.getInstance();
 
         final Thread senderThread = new Thread(new Sender(socket, Constants.BUFFER_SIZE));

@@ -3,6 +3,7 @@ package detectionservice;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -18,7 +19,7 @@ public class DetectionCluster {
     public DetectionCluster(int port) throws UnknownHostException {
         super();
         List<Node> list = new CopyOnWriteArrayList<>();
-        Node node = new MyNode(port,0);
+        Node node = new MyNode(port, 1);
         MY_ID = node.getId();
         list.add(node);
         this.servers = list;
@@ -33,11 +34,11 @@ public class DetectionCluster {
         return this.servers.containsAll(cluster.servers);
     }
 
-    public Node getMe() {
+    public MyNode getMe() {
         for (Node node :
                 this.servers) {
             if (node.getId() == MY_ID) {
-                return node;
+                return (MyNode)node;
             }
         }
         return null;
@@ -51,12 +52,23 @@ public class DetectionCluster {
         return false;
     }
 
-    public synchronized boolean add(Node node) {
+    public boolean add(Node node) {
         if (node != null)
             if (node.getId() != MY_ID) {
                 return servers.add(node);
             }
         return false;
+    }
+
+    public void updateTime(Node node) throws UnknownHostException {
+        if (node.getId() == MY_ID) {
+            MyNode me = getMe();
+            me.setCurrentTime();
+            servers.set(servers.indexOf(node),me);
+        } else {
+            int i = servers.indexOf(node);
+            servers.set(i, node);
+        }
     }
 
     public boolean contains(Node node) {

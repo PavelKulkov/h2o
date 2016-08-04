@@ -69,13 +69,12 @@ public class Receiver implements Runnable {
         logger.info("Thread receiver is interrupted.");
     }
 
-    private void addNewServers(DetectionCluster tempCluster) throws ExecutionException, InterruptedException {
+    private void addNewServers(DetectionCluster tempCluster) throws ExecutionException, InterruptedException, UnknownHostException {
         Iterator<Node> iterator = tempCluster.getNodes().iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
             if (cluster.contains(node)) {
-                cluster.remove(node);
-                cluster.add(node);
+                cluster.updateTime(node);
             } else if ((new Date().getTime() - node.getTime()) < Constants.TIMEOUT) {
                 if (client.addServer(node.toClusterServer()).get()) {
                     cluster.add(node);

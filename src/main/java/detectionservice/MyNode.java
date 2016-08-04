@@ -25,6 +25,10 @@ public class MyNode extends Node {
         setTime(new Date().getTime());
     }
 
+    public void setCurrentTime(){
+        setTime(new Date().getTime());
+    }
+
     private int getMyID() {
         String pid = ManagementFactory.getRuntimeMXBean().getName();
         pid = pid.substring(0, pid.indexOf("@"));
