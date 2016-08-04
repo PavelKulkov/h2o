@@ -11,11 +11,10 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class ClientSingleton {
 
     private static RaftClient client = null;
-    private static String path = "./server";
 
     private static RaftClient createInstance() {
         RaftClient client;
-        FileBasedServerStateManager stateManager = new FileBasedServerStateManager(path);
+        FileBasedServerStateManager stateManager = new FileBasedServerStateManager(Constants.RAFT_PATH);
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
         RpcTcpClientFactory rpcTcpClientFactory = new RpcTcpClientFactory(executor);
         ClusterConfiguration config = stateManager.loadClusterConfiguration();
@@ -23,10 +22,6 @@ public class ClientSingleton {
 
         client = new RaftClient(rpcTcpClientFactory, config, loggerFactory);
         return client;
-    }
-
-    public static void setPath(String path) {
-        ClientSingleton.path = path;
     }
 
     public static RaftClient getInstance(){

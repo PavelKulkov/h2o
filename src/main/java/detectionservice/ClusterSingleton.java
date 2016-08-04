@@ -1,17 +1,13 @@
 package detectionservice;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 public class ClusterSingleton {
 
     private static DetectionCluster cluster = null;
-    private static int port = 14880;
 
     private static DetectionCluster createInstance() throws IOException {
-        cluster = new DetectionCluster(port);
+        cluster = new DetectionCluster(Constants.DETECTION_PORT);
         return cluster;
     }
 
@@ -19,10 +15,6 @@ public class ClusterSingleton {
         if (cluster == null)
             cluster = ClusterSingleton.createInstance();
         return cluster;
-    }
-
-    public static void setPort(int port) {
-        ClusterSingleton.port = port;
     }
 
 }

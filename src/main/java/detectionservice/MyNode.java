@@ -10,11 +10,6 @@ import java.util.Date;
 import java.util.logging.Level;
 
 public class MyNode extends Node {
-    public static int DEFAULT_PORT = 42042;
-
-    MyNode() throws UnknownHostException {
-        this(DEFAULT_PORT);
-    }
 
     MyNode(int port) throws UnknownHostException {
         super();

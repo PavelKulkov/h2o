@@ -7,19 +7,18 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DetectionCluster {
-    private static transient final int DEFAULT_PORT = 14880;
     private transient final int MY_ID;
 
     private volatile List<Node> servers;
 
     public DetectionCluster() throws UnknownHostException {
-        this(DEFAULT_PORT);
+        this(Constants.DETECTION_PORT);
     }
 
     public DetectionCluster(int port) throws UnknownHostException {
         super();
         List<Node> list = new CopyOnWriteArrayList<>();
-        Node node = new MyNode(port, 2);
+        Node node = new MyNode(port);
         MY_ID = node.getId();
         list.add(node);
         this.servers = list;

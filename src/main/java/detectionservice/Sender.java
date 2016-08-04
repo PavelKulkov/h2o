@@ -57,7 +57,7 @@ public class Sender implements Runnable {
                         buffer,
                         buffer.length,
                         InetAddress.getByAddress(broadcast),
-                        DetectionThread.DETECTION_PORT);
+                        Constants.DETECTION_PORT);
                 while (offset < buffer.length) {
                     packet.setData(Arrays.copyOfRange(buffer, offset, offset + bufferSize));
                     socket.send(packet);
@@ -94,12 +94,11 @@ public class Sender implements Runnable {
     }
 
     private void removeOldServers() throws ExecutionException, InterruptedException {
-        Iterator<Node> iterator = cluster.getNodes().iterator();
-        while (iterator.hasNext()) {
-            Node node = iterator.next();
-            if (new Date().getTime() - node.getTime() > 30000) {
+        for (Node node :
+                cluster.getNodes()) {
+            if (new Date().getTime() - node.getTime() > 5000) {
                 if (client.removeServer(node.getId()).get()) {
-                    iterator.remove();
+                    cluster.remove(node);
                     logger.info("Node " + node.getEndpoint() + " is removed!");
                 }
             }
