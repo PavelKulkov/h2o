@@ -3,7 +3,6 @@ package detectionservice;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import net.data.technology.jraft.ClusterServer;
 import net.data.technology.jraft.RaftClient;
 
 import java.io.ByteArrayOutputStream;
