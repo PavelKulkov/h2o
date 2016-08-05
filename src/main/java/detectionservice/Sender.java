@@ -40,10 +40,9 @@ public class Sender implements Runnable {
 
     public void run() {
         Thread thread = Thread.currentThread();
-
         try {
             byte[] buffer;
-            logger.info(gson.toJson(cluster));
+//            logger.info(gson.toJson(cluster));
             while (!thread.isInterrupted()) {
                 try {
                     removeOldServers();
@@ -96,7 +95,7 @@ public class Sender implements Runnable {
     private void removeOldServers() throws ExecutionException, InterruptedException {
         for (Node node :
                 cluster.getNodes()) {
-            if (new Date().getTime() - node.getTime() > Constants.TIMEOUT && !node.getClass().equals(MyNode.class)) {
+            if (new Date().getTime() - node.getTime() > Constants.TIMEOUT) {
                 if (client.removeServer(node.getId()).get()) {
                     cluster.remove(node);
                     logger.info("Node " + node.getEndpoint() + " is removed!");

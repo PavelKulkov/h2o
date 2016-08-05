@@ -19,6 +19,7 @@ public class Constants {
 
     /**
      * Size of buffer for detection service work
+     * Don't touch it!
      */
     public static final int BUFFER_SIZE = 1024;
 
@@ -28,8 +29,9 @@ public class Constants {
     public static final String RAFT_PATH = "./server";
 
     /**
-     * After the timeout has expired, node will be automatically deleted, millis
+     * After the timeout has expired, node will be automatically deleted (millis)
+     * Time must be synchronized on all nodes!
      */
-    public static final int TIMEOUT = 5000;
+    public static final int TIMEOUT = 30000;
 
 }

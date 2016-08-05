@@ -19,7 +19,7 @@ public class DetectionCluster {
     public DetectionCluster(int port) throws UnknownHostException {
         super();
         List<Node> list = new CopyOnWriteArrayList<>();
-        Node node = new MyNode(port, 1);
+        Node node = new MyNode(port, 2);
         MY_ID = node.getId();
         list.add(node);
         this.servers = list;

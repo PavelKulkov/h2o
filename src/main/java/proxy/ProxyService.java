@@ -1,22 +1,25 @@
 package proxy;
 
+import detectionservice.Constants;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
-/**
- * Created by Pavel Kulkov  on 28.07.2016.
- */
-public class ProxyService {
+public class ProxyService implements Runnable {
 
-    private static final int PORT = 14000;
+    private static final Logger logger = Logger.getAnonymousLogger();
 
-    public static void main(String[] args) {
+    public void run() {
+        Thread thread = Thread.currentThread();
         ExecutorService clientThreads = Executors.newCachedThreadPool();
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            while (true) {
+        logger.info("Proxy service is started");
+        try (ServerSocket serverSocket = new ServerSocket(Constants.PROXY_PORT)) {
+            logger.info(""+serverSocket.getInetAddress().getHostAddress()+"\n"+serverSocket.getLocalSocketAddress()+"\n"+serverSocket.getLocalPort());
+            while (!thread.isInterrupted()) {
                 Socket clientSocket = serverSocket.accept();
                 clientThreads.submit(new ClientThread(clientSocket));
             }
