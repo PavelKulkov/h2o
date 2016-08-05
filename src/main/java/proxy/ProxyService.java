@@ -18,8 +18,11 @@ public class ProxyService {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                clientThreads.submit(new ClientThread(clientSocket));
+                //clientThreads.submit(new ClientThread(clientSocket));
+                Thread thread = new Thread(new ClientThread(clientSocket));
+                thread.start();
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
