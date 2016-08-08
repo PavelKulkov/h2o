@@ -3,18 +3,23 @@ package detectionservice;
 
 import net.data.technology.jraft.ClusterServer;
 
-public class Node /*extends ClusterServer*/ {
-    private int id;
+import java.util.Date;
+
+public class Node {
+    private /*transient*/ int id;
     private String endpoint;
+    private long time;
 
     public Node() {
         this.id = -1;
         this.endpoint = "null";
+        this.time = new Date().getTime();
     }
 
     public Node(int id, String endpoint) {
         this.id = id;
         this.endpoint = endpoint;
+        this.time = new Date().getTime();
     }
 
     public int getId() {
@@ -33,6 +38,14 @@ public class Node /*extends ClusterServer*/ {
         this.endpoint = endpoint;
     }
 
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,6 +62,13 @@ public class Node /*extends ClusterServer*/ {
         int result = id;
         result = 31 * result + endpoint.hashCode();
         return result;
+    }
+
+    public ClusterServer toClusterServer() {
+        ClusterServer server = new ClusterServer();
+        server.setId(id);
+        server.setEndpoint(endpoint);
+        return  server;
     }
 
 }

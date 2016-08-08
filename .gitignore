@@ -3,4 +3,4 @@
 **/*.project
 **/*.jar
 h2o.iml
-cluster.json
+/server/
