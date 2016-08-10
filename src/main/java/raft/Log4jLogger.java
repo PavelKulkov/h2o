@@ -2,9 +2,6 @@ package raft;
 
 import org.apache.log4j.Logger;
 
-/**
- * Created by Pavel Kulkov  on 18.07.2016.
- */
 public class Log4jLogger implements net.data.technology.jraft.Logger {
 
     private Logger logger;

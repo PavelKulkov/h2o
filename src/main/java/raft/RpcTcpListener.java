@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
 
-/**
- * Created by Pavel Kulkov  on 18.07.2016.
- */
 public class RpcTcpListener implements RpcListener{
     private int port;
     private Logger logger;

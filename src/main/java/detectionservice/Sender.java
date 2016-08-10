@@ -3,6 +3,7 @@ package detectionservice;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.data.technology.jraft.RaftClient;
+import net.data.technology.jraft.ServerRole;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -94,16 +95,19 @@ public class Sender implements Runnable {
 
     private void removeOldServers() throws ExecutionException, InterruptedException {
         for (Node node :
-                cluster.getNodes()) {
-            if (new Date().getTime() - node.getTime() > Constants.TIMEOUT) {
-                if (client.removeServer(node.getId()).get()) {
+                cluster.getNodes())
+            if (new Date().getTime() - node.getTime() > Constants.TIMEOUT)
+                if (DetectionThread.role == ServerRole.Leader) {
+                    if (client.removeServer(node.getId()).get()) {
+                        cluster.remove(node);
+                        logger.info("Node " + node.getEndpoint() + " is removed!");
+                    }
+                } else {
                     cluster.remove(node);
                     logger.info("Node " + node.getEndpoint() + " is removed!");
                 }
-            }
-        }
-
     }
-
-
 }
+
+
+

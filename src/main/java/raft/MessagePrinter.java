@@ -25,9 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-/**
- * Created by Pavel Kulkov  on 18.07.2016.
- */
 public class MessagePrinter implements StateMachine {
 
     private Path snapshotStore;

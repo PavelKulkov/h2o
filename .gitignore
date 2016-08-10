@@ -4,3 +4,7 @@
 **/*.jar
 h2o.iml
 /server/
+/.idea/
+src/main/java/hClient.java
+target/
+src/main/java/detectionservice/TestThread.java

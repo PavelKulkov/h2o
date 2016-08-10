@@ -1,8 +1,5 @@
 package raft;
 
-/**
- * Created by Pavel Kulkov  on 18.07.2016.
- */
 public class Pair<TFirst, TSecond> {
 
     private TFirst first;

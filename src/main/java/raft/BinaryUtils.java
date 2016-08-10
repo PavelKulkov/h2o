@@ -9,9 +9,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Pavel Kulkov  on 18.07.2016.
- */
 public class BinaryUtils {
 
     public static final int RAFT_RESPONSE_HEADER_SIZE = Integer.BYTES * 2 + Long.BYTES * 2 + 2;

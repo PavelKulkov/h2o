@@ -21,9 +21,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-/**
- * Created by Pavel Kulkov  on 20.07.2016.
- */
 public class FileBasedSequentialLogStore implements SequentialLogStore{
 
     private static final String LOG_INDEX_FILE = "store.idx";

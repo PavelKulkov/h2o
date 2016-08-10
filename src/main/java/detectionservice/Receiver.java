@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import net.data.technology.jraft.RaftClient;
+import net.data.technology.jraft.ServerRole;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -69,18 +70,22 @@ public class Receiver implements Runnable {
     }
 
     private void addNewServers(DetectionCluster tempCluster) throws ExecutionException, InterruptedException, UnknownHostException {
+
         Iterator<Node> iterator = tempCluster.getNodes().iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
-            if (cluster.contains(node)) {
+            if (cluster.contains(node))
                 cluster.updateTime(node);
-            } else if ((new Date().getTime() - node.getTime()) < Constants.TIMEOUT) {
-                if (client.addServer(node.toClusterServer()).get()) {
+            else if ((new Date().getTime() - node.getTime()) < Constants.TIMEOUT)
+                if (DetectionThread.role == ServerRole.Leader) {
+                    if (client.addServer(node.toClusterServer()).get()) {
+                        cluster.add(node);
+                        logger.info("New node " + node.getEndpoint() + " is added!");
+                    }
+                } else {
                     cluster.add(node);
                     logger.info("New node " + node.getEndpoint() + " is added!");
-                    continue;
                 }
-            }
         }
     }
 }

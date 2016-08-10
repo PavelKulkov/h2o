@@ -5,9 +5,6 @@ import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.function.BiConsumer;
 
-/**
- * Created by Pavel Kulkov  on 18.07.2016.
- */
 public class AsyncUtility {
     public static <V, A> CompletionHandler<V, A> handlerFrom(BiConsumer<V, A> completed, BiConsumer<Throwable, A> failed) {
         return new CompletionHandler<V, A>() {

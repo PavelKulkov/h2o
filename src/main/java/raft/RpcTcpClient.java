@@ -17,10 +17,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-
-/**
- * Created by Pavel Kulkov  on 18.07.2016.
- */
 public class RpcTcpClient implements RpcClient {
     private AsynchronousSocketChannel connection;
     private AsynchronousChannelGroup channelGroup;

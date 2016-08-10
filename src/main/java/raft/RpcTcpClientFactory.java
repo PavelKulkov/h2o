@@ -9,9 +9,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
 
-/**
- * Created by Pavel Kulkov  on 18.07.2016.
- */
 public class RpcTcpClientFactory implements RpcClientFactory {
     private ExecutorService executorService;
 

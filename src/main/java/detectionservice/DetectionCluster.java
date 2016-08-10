@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class DetectionCluster {
     private transient final int MY_ID;
 
+    public final int proxyPort = Constants.PROXY_PORT;
     private volatile List<Node> servers;
 
     public DetectionCluster() throws UnknownHostException {
@@ -19,7 +20,7 @@ public class DetectionCluster {
     public DetectionCluster(int port) throws UnknownHostException {
         super();
         List<Node> list = new CopyOnWriteArrayList<>();
-        Node node = new MyNode(port, 2);
+        Node node = new MyNode(port, 3);
         MY_ID = node.getId();
         list.add(node);
         this.servers = list;
@@ -35,13 +36,7 @@ public class DetectionCluster {
     }
 
     public MyNode getMe() {
-        for (Node node :
-                this.servers) {
-            if (node.getId() == MY_ID) {
-                return (MyNode)node;
-            }
-        }
-        return null;
+        return (MyNode)this.servers.stream().filter((Node node) ->  node.getId() == MY_ID).findFirst().get();
     }
 
     public boolean remove(Node node) {
