@@ -32,6 +32,6 @@ public class Constants {
      * After the timeout has expired, node will be automatically deleted (millis)
      * Time must be synchronized on all nodes!
      */
-    public static final int TIMEOUT = 30000;
+    public static final int TIMEOUT = 20000;
 
 }

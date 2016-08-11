@@ -20,6 +20,7 @@ public class DetectionThread {
     private static RaftClient raftClient;
     private static DetectionCluster cluster;
     public static ServerRole role;
+    public static ClusterConfiguration config;
 
     public static void main(String[] args) throws IOException, InterruptedException, IllegalAccessException, NoSuchFieldException, URISyntaxException {
         final DatagramSocket socket;
@@ -47,14 +48,10 @@ public class DetectionThread {
         receiverThread.start();
         proxyThread.start();
 
-        Field f = null;
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
 
-
-//        final Thread testThread = new Thread(new TestThread());
-//        Thread.sleep(5000);
-//        testThread.start();
+        final Thread testThread = new Thread(new TestThread());
+        Thread.sleep(5000);
+        testThread.start();
 
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -66,25 +63,36 @@ public class DetectionThread {
                 senderThread.interrupt();
                 receiverThread.interrupt();
                 proxyThread.interrupt();
-//                testThread.interrupt();
+                testThread.interrupt();
 
                 try {
                     receiverThread.join(5000);
                     senderThread.join(5000);
                     proxyThread.join(5000);
-//                    testThread.join(5000);
+                    testThread.join(5000);
                 } catch (InterruptedException e) {
                     anonymousLogger.info("Поток завершения был прерван.");
                 }
             }
         });
 
+
+        /**
+         * Reflection API for logging
+         */
+        Field f;
+        Field f1;
+        f = raftServer.getClass().getDeclaredField("role");
+        f1 = raftServer.getClass().getDeclaredField("config");
+        f.setAccessible(true);
+        f1.setAccessible(true);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
         while (true) {
             try {
-                f = raftServer.getClass().getDeclaredField("role");
-                f.setAccessible(true);
                 role = (ServerRole) f.get(raftServer);
-                anonymousLogger.info(role.toString() + "    " + gson.toJson(cluster));
+                config = (ClusterConfiguration) f1.get(raftServer);
+                anonymousLogger.info(role.toString() + "   " + gson.toJson(config) + "\nDetection cluster:   " + gson.toJson(cluster));
                 Thread.sleep(5000);
 
             } catch (Exception e) {

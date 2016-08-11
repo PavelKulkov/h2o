@@ -83,8 +83,8 @@ public class Receiver implements Runnable {
                         logger.info("New node " + node.getEndpoint() + " is added!");
                     }
                 } else {
-                    cluster.add(node);
-                    logger.info("New node " + node.getEndpoint() + " is added!");
+//                    cluster.add(node);
+//                    logger.info("New node " + node.getEndpoint() + " is added!");
                 }
         }
     }
