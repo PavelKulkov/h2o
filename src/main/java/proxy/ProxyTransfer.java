@@ -31,15 +31,14 @@ public class ProxyTransfer extends Transfer {
     private DataInputStream dataInputStream = null;
 
 
-
     public ProxyTransfer(SessionInterface sessionInterface) {
         super(sessionInterface);
     }
 
 
-    public void init(byte[] bytes,int offset,int len) throws IOException {
+    public void init(byte[] bytes, int offset, int len) throws IOException {
         if (bytes.length != 0) {
-            this.byteArrayInputStream = new ByteArrayInputStream(bytes,offset,len);
+            this.byteArrayInputStream = new ByteArrayInputStream(bytes, offset, len);
             dataInputStream = new DataInputStream(byteArrayInputStream);
         }
     }
@@ -57,8 +56,8 @@ public class ProxyTransfer extends Transfer {
         switch (operation) {
             case SessionRemote.SESSION_PREPARE_READ_PARAMS:
             case SessionRemote.SESSION_PREPARE: {
-                int id = dataInputStream.readInt();
-                 sql = this.readString();
+                dataInputStream.readInt();
+                sql = this.readString();
             }
         }
         return sql;
@@ -89,5 +88,39 @@ public class ProxyTransfer extends Transfer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isWriteQuery(String query) {
+        if(query == null){
+            return false;
+        }
+        query = query.trim().toLowerCase();
+        String str = "";
+        if(query.startsWith("explain") || query.startsWith("grant")){
+            str = query.split(" ")[1];
+        }
+        str = query.split(" ")[0];
+        System.out.println(str);
+        switch (str) {
+            case "insert":
+            case "update":
+            case "delete":
+            case "alter":
+            case "create":
+            case "drop":
+            case "truncate":
+            case "commit":
+            case "prepare":
+            case "rollback":
+            case "backup":
+            case "script":
+            case "runscript":
+            case "merge":
+            case "call": return  true;
+            default:
+                return false;
+        }
+
+
     }
 }
