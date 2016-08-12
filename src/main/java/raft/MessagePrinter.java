@@ -87,6 +87,7 @@ public class MessagePrinter implements StateMachine {
 
     @Override
     public void commit(long logIndex, byte[] data) {
+        Replicator.Replicate(data);
         String message = new String(data, StandardCharsets.UTF_8);
         System.out.printf("commit: %d\t%s\n", logIndex, message);
         this.commitIndex = logIndex;
