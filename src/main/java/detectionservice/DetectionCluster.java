@@ -72,6 +72,10 @@ public class DetectionCluster {
         return false;
     }
 
+    public void setRmv(Node node) {
+        this.servers.stream().filter(node::equals).forEach((n) -> n.setRmv(true));
+    }
+
     public List<Node> getNodes() {
         return servers;
     }

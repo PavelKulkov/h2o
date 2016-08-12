@@ -9,6 +9,7 @@ public class Node {
     private int id;
     private String endpoint;
     private long time;
+    private boolean rmv = false;
 
     public Node() {
         this.id = -1;
@@ -44,6 +45,14 @@ public class Node {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public boolean isRmv() {
+        return rmv;
+    }
+
+    public void setRmv(boolean rmv) {
+        this.rmv = rmv;
     }
 
     @Override

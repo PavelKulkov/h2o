@@ -48,12 +48,6 @@ public class DetectionThread {
         receiverThread.start();
         proxyThread.start();
 
-
-        final Thread testThread = new Thread(new TestThread());
-        Thread.sleep(5000);
-        testThread.start();
-
-
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -63,13 +57,11 @@ public class DetectionThread {
                 senderThread.interrupt();
                 receiverThread.interrupt();
                 proxyThread.interrupt();
-                testThread.interrupt();
 
                 try {
                     receiverThread.join(5000);
                     senderThread.join(5000);
                     proxyThread.join(5000);
-                    testThread.join(5000);
                 } catch (InterruptedException e) {
                     anonymousLogger.info("Поток завершения был прерван.");
                 }
@@ -77,22 +69,20 @@ public class DetectionThread {
         });
 
 
-        /**
-         * Reflection API for logging
-         */
-        Field f;
         Field f1;
-        f = raftServer.getClass().getDeclaredField("role");
-        f1 = raftServer.getClass().getDeclaredField("config");
-        f.setAccessible(true);
+        Field f2;
+        f1 = raftServer.getClass().getDeclaredField("role");
+        f2= raftServer.getClass().getDeclaredField("config");
         f1.setAccessible(true);
+        f2.setAccessible(true);
+
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         while (true) {
             try {
-                role = (ServerRole) f.get(raftServer);
-                config = (ClusterConfiguration) f1.get(raftServer);
-                anonymousLogger.info(role.toString() + "   " + gson.toJson(config) + "\nDetection cluster:   " + gson.toJson(cluster));
+                role = (ServerRole) f1.get(raftServer);
+                config = (ClusterConfiguration) f2.get(raftServer);
+                anonymousLogger.info(role.toString() + "   " + gson.toJson(config) + "\nDetection:   " + gson.toJson(cluster));
                 Thread.sleep(5000);
 
             } catch (Exception e) {

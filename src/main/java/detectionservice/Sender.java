@@ -2,6 +2,7 @@ package detectionservice;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.data.technology.jraft.ClusterConfiguration;
 import net.data.technology.jraft.RaftClient;
 import net.data.technology.jraft.ServerRole;
 
@@ -12,9 +13,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +45,7 @@ public class Sender implements Runnable {
 //            logger.info(gson.toJson(cluster));
             while (!thread.isInterrupted()) {
                 try {
+                    cluster.updateTime(cluster.getMe());
                     removeOldServers();
                 } catch (ExecutionException e) {
                     logger.info(e.getMessage());
@@ -99,16 +99,18 @@ public class Sender implements Runnable {
                 cluster.getNodes()) {
             if (node.equals(cluster.getMe()))
                 continue;
-            if (new Date().getTime() - node.getTime() > Constants.TIMEOUT)
-                if (DetectionThread.role == ServerRole.Leader) {
-                    if (client.removeServer(node.getId()).get()) {
-                        cluster.remove(node);
-                        logger.info("Node " + node.getEndpoint() + " is removed!");
-                    }
-                } else {
-//                    cluster.remove(node);
-//                    logger.info("Node " + node.getEndpoint() + " is removed!");
+            if (new Date().getTime() - node.getTime() > Constants.TIMEOUT) {
+                cluster.setRmv(node);
+            }
+            if (node.isRmv()) {
+                if (DetectionThread.role == ServerRole.Leader)
+                    client.removeServer(node.getId());
+
+                if (DetectionThread.config.getServers().stream().noneMatch((n) -> n.getId() == node.getId())) {
+                    cluster.remove(node);
+                    logger.info("Node " + node.getEndpoint() + " is removed!");
                 }
+            }
         }
     }
 }

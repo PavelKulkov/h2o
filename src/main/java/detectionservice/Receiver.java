@@ -77,14 +77,13 @@ public class Receiver implements Runnable {
             if (cluster.contains(node))
                 cluster.updateTime(node);
             else if ((new Date().getTime() - node.getTime()) < Constants.TIMEOUT)
-                if (DetectionThread.role == ServerRole.Leader) {
+                if (DetectionThread.config.getServers().stream().anyMatch((n) -> n.getId() == node.getId())) {
+                    cluster.add(node);
+                    logger.info("New node " + node.getEndpoint() + " is added!");
+                } else if (DetectionThread.role == ServerRole.Leader) {
                     if (client.addServer(node.toClusterServer()).get()) {
                         cluster.add(node);
-                        logger.info("New node " + node.getEndpoint() + " is added!");
                     }
-                } else {
-//                    cluster.add(node);
-//                    logger.info("New node " + node.getEndpoint() + " is added!");
                 }
         }
     }

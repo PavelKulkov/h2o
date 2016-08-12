@@ -32,7 +32,6 @@ public class RaftServerSingleton {
         Log4jLoggerFactory loggerFactory = new Log4jLoggerFactory();
         RpcTcpClientFactory rpcTcpClientFactory = new RpcTcpClientFactory(executor);
 
-
         RaftContext raftContext = new RaftContext(
                 stateManager,
                 messagePrinter,
@@ -49,7 +48,6 @@ public class RaftServerSingleton {
 
 //        mp.run(RaftConsensus.run(raftContext));
         return raftServer;
-
     }
 
     public static RaftServer getInstance() throws URISyntaxException {
