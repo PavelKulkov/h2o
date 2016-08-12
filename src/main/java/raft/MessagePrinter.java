@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,12 +39,14 @@ public class MessagePrinter implements StateMachine {
     private ExecutorService executorService;
     private RaftMessageSender messageSender;
     private Map<String, CompletableFuture<String>> uncommittedRequests = new ConcurrentHashMap<String, CompletableFuture<String>>();
+    private Replicator replicator;
 
     public MessagePrinter(Path baseDir, int listeningPort){
         this.port = listeningPort;
         //this.logger = LogManager.getLogger(getClass());
         this.snapshotStore = baseDir.resolve("snapshots");
         this.commitIndex = 0;
+        this.replicator = new Replicator();
         if(!Files.isDirectory(this.snapshotStore)){
             try{
                 Files.createDirectory(this.snapshotStore);
@@ -87,8 +90,12 @@ public class MessagePrinter implements StateMachine {
 
     @Override
     public void commit(long logIndex, byte[] data) {
-        Replicator.Replicate(data);
         String message = new String(data, StandardCharsets.UTF_8);
+        try {
+            replicator.executeQuery(message);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         System.out.printf("commit: %d\t%s\n", logIndex, message);
         this.commitIndex = logIndex;
         this.addMessage(message);

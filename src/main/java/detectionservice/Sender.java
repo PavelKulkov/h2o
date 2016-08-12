@@ -78,7 +78,7 @@ public class Sender implements Runnable {
         try {
             byte[] ip = InetAddress.getLocalHost().getAddress();
             ip[3] = (byte) 255;
-            ip[2] = (byte) 255;
+//            ip[2] = (byte) 255;
             ip = InetAddress.getByAddress(ip).getAddress();
             return ip;
         } catch (UnknownHostException e) {
@@ -95,23 +95,23 @@ public class Sender implements Runnable {
     }
 
     private void removeOldServers() throws ExecutionException, InterruptedException {
-        for (Node node :
-                cluster.getNodes()) {
-            if (node.equals(cluster.getMe()))
-                continue;
-            if (new Date().getTime() - node.getTime() > Constants.TIMEOUT) {
-                cluster.setRmv(node);
-            }
-            if (node.isRmv()) {
-                if (DetectionThread.role == ServerRole.Leader)
-                    client.removeServer(node.getId());
-
-                if (DetectionThread.config.getServers().stream().noneMatch((n) -> n.getId() == node.getId())) {
-                    cluster.remove(node);
-                    logger.info("Node " + node.getEndpoint() + " is removed!");
-                }
-            }
-        }
+//        for (Node node :
+//                cluster.getNodes()) {
+//            if (node.equals(cluster.getMe()))
+//                continue;
+//            if (new Date().getTime() - node.getTime() > Constants.TIMEOUT) {
+//                cluster.setRmv(node);
+//            }
+//            if (node.isRmv()) {
+//                if (DetectionThread.role == ServerRole.Leader)
+//                    client.removeServer(node.getId());
+//
+//                if (DetectionThread.config.getServers().stream().noneMatch((n) -> n.getId() == node.getId())) {
+//                    cluster.remove(node);
+//                    logger.info("Node " + node.getEndpoint() + " is removed!");
+//                }
+//            }
+//        }
     }
 }
 

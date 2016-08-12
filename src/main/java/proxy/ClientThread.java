@@ -34,7 +34,7 @@ public class ClientThread implements Runnable {
                 //System.out.println(new String(bytes, 0, count));
                 proxyTransfer.init(bytes, 0, count);
                 if (flag) {
-                    //proxyTransfer.getConn()
+//                    ProxyService.send(new String(bytes));
                     flag = false;
                 } else {
                     query = proxyTransfer.getQuery();
